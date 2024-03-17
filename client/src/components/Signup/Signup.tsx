@@ -27,6 +27,7 @@ const Signup = () => {
       <form className=" py-4 mt-4 space-y-6 w-[97%] px-3 sm:w-[500px] shadow-md rounded-md flex flex-col items-center mx-1 sm:mx-auto bg-white">
         <div className="relative w-full">
           <input
+            required
             type="file"
             onChange={(e) => handleProfilePicChange(e)}
             className="absolute w-28 h-28 top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 opacity-0"
@@ -42,6 +43,7 @@ const Signup = () => {
           <label htmlFor="name ">
             Full Name
             <input
+              required
               id="name"
               type="name"
               className="w-full p-2 outline-none border border-gray-300 bg-transparent rounded-md"
@@ -52,6 +54,7 @@ const Signup = () => {
           <label htmlFor="email ">
             Email address
             <input
+              required
               id="email"
               type="email"
               className="w-full p-2 outline-none border border-gray-300 bg-transparent rounded-md"
@@ -62,6 +65,7 @@ const Signup = () => {
           <label htmlFor="password">
             Password
             <input
+              required
               id="password"
               type={showPassword ? "text" : "password"}
               className="w-full p-2 outline-none border border-gray-300 bg-transparent rounded-md"

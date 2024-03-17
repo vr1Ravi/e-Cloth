@@ -15,6 +15,7 @@ const Login = () => {
           <label htmlFor="email ">
             Email address
             <input
+              required
               id="email"
               type="email"
               className="w-full p-2 outline-none border border-gray-300 bg-transparent rounded-md"
@@ -25,6 +26,7 @@ const Login = () => {
           <label htmlFor="password">
             Password
             <input
+              required
               id="password"
               type={showPassword ? "text" : "password"}
               className="w-full p-2 outline-none border border-gray-300 bg-transparent rounded-md"
