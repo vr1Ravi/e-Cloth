@@ -1,18 +1,19 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Types } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 // 0. Creating type for address, avatar.
-type Address = {
+interface Address {
+  _id: Types.ObjectId;
   country: String;
   city: String;
   address1: String;
   address2: String;
   zipCode: Number;
   addressType: String;
-};
+}
 
-type Avatar = {
+interface Avatar {
   public_id: {
     type: String;
     required: true;
@@ -21,7 +22,7 @@ type Avatar = {
     type: String;
     required: true;
   };
-};
+}
 
 // 1. Create an interface representing a document in MongoDB.
 interface IUser {
@@ -29,7 +30,7 @@ interface IUser {
   email: string;
   password: String;
   phoneNumber: Number;
-  addresses: Address[];
+  addresses: Types.DocumentArray<Address>;
   role: String;
   createdAt: Date;
   avatar?: Avatar;

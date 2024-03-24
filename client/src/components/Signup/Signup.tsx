@@ -2,12 +2,17 @@ import { Link } from "react-router-dom";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { MdVisibility, MdOutlineVisibilityOff } from "react-icons/md";
 import profile_logo from "../../assets/Profile.png";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState, FormEvent } from "react";
+import { signUpUser } from "../../apis/user_api";
 const Signup = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [profilePicPreview, setProfilePicPreview] = useState<
     string | ArrayBuffer | null
   >(null);
+  const [showValidatePassword, setShowValidatePassword] = useState(false);
+  const [isMinChar, setIsMinChar] = useState(true);
+  const [isDigit, setIsDigit] = useState(false);
+  const [isSpecialChar, setIsSpecialChar] = useState(false);
 
   const handleProfilePicChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -19,16 +24,27 @@ const Signup = () => {
       };
     }
   };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    signUpUser(formData);
+  };
+
   return (
     <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gray-100 overflow-hidden">
       <h2 className=" text-center font-extrabold font-Roboto text-xl">
         Sign up
       </h2>
-      <form className=" py-4 mt-4 space-y-6 w-[97%] px-3 sm:w-[500px] shadow-md rounded-md flex flex-col items-center mx-1 sm:mx-auto bg-white">
+      <form
+        onSubmit={(e) => handleSubmit(e)}
+        className=" py-4 mt-4 space-y-6 w-[97%] px-3 sm:w-[500px] shadow-md rounded-md flex flex-col items-center mx-1 sm:mx-auto bg-white"
+      >
         <div className="relative w-full">
           <input
             required
             type="file"
+            name="file"
             onChange={(e) => handleProfilePicChange(e)}
             className="absolute w-28 h-28 top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 opacity-0"
           />
@@ -45,8 +61,9 @@ const Signup = () => {
             <input
               required
               id="name"
-              type="name"
-              className="w-full p-2 outline-none border border-gray-300 bg-transparent rounded-md"
+              type="text"
+              name="name"
+              className={` w-full p-2 outline-none border border-gray-300  bg-transparent rounded-md`}
             />
           </label>
         </div>
@@ -57,18 +74,61 @@ const Signup = () => {
               required
               id="email"
               type="email"
-              className="w-full p-2 outline-none border border-gray-300 bg-transparent rounded-md"
+              name="email"
+              className={`w-full p-2 outline-none border border-gray-300 bg-transparent rounded-md`}
             />
           </label>
         </div>
-        <div className="w-[90%] relative">
+        <div className="w-[90%] relative ">
+          {showValidatePassword && (
+            <div className="absolute w-[70%] sm:w-1/2 right-0 -top-16 border shadow-md rounded-md z-10 bg-white p-3 *:block">
+              <small
+                className={`${isMinChar ? "text-red-600" : "text-green-600"}`}
+              >
+                . Minimum 6 characters
+              </small>
+              <small
+                className={`${isDigit ? "text-green-600" : "text-red-600"}`}
+              >
+                . Atleast 1 digit
+              </small>
+              <small
+                className={`${
+                  isSpecialChar ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                . Atleast 1 special character
+              </small>
+            </div>
+          )}
           <label htmlFor="password">
             Password
             <input
+              onClick={(e) => {
+                setShowValidatePassword(true);
+                const value = (e.target as HTMLInputElement).value;
+                if (value.length > 5) setIsMinChar(false);
+                const isDigitRegex = /\d/;
+                if (isDigitRegex.test(value)) setIsDigit(true);
+                const isSpecialCharRegex = /[^\w]/g;
+                if (isSpecialCharRegex.test(value)) setIsSpecialChar(true);
+              }}
+              onChange={(e) => {
+                const value = (e.target as HTMLInputElement).value;
+                value.length > 5 ? setIsMinChar(false) : setIsMinChar(true);
+                const isDigitRegex = /\d/;
+                isDigitRegex.test(value) ? setIsDigit(true) : setIsDigit(false);
+                const isSpecialCharRegex = /[^\w]/g;
+                isSpecialCharRegex.test(value)
+                  ? setIsSpecialChar(true)
+                  : setIsSpecialChar(false);
+              }}
               required
               id="password"
               type={showPassword ? "text" : "password"}
-              className="w-full p-2 outline-none border border-gray-300 bg-transparent rounded-md"
+              name="password"
+              minLength={6}
+              className={`w-full p-2 outline-none border border-gray-300 bg-transparent rounded-md`}
             />
           </label>
           <div className="absolute right-2 top-[50%] *:text-xl *:cursor-pointer">
@@ -95,6 +155,7 @@ const Signup = () => {
         <button
           type="submit"
           className="bg-red-600 text-white w-[90%] p-2 rounded-md"
+          disabled={isMinChar || !isDigit || !isSpecialChar ? true : false}
         >
           {" "}
           SIGN UP
